@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome Stranger</title>
+</head>
+<body>
+<!-- allow any unauthenticated users to see the div and its content -->
+<div sec:authorize="isAnonymous()">
+    <h1><a th:href="@{/login}">Login</a></h1>
+</div>
+
+<!-- allow any authenticated users (regardless of authority) to see the div and its content -->
+<div sec:authorize="isAuthenticated()">
+    <h1 th:text="|Hello ${#authentication.name}!|"></h1>
+    <form th:action="@{/logout}" method="post">
+        <input id="logout" type="submit" value="Logout">
+    </form>
+</div>
+</body>
+</html>

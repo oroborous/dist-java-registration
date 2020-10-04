@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head></head>
+<body>
+<h1>Login</h1>
+<form name="f" th:action="@{/login}" method="POST">
+    <table>
+        <tr>
+            <td>User:</td>
+            <td><input type="text" name="username" value="test@test.com"></td>
+        </tr>
+        <tr>
+            <td>Password:</td>
+            <td><input type="password" name="password" value="test"/></td>
+        </tr>
+        <tr>
+            <td><input name="submit" type="submit" value="submit"/></td>
+        </tr>
+    </table>
+</form>
+
+<div th:if="${param.error}" class="alert">
+    Invalid username or password. Do you need to <a th:href="@{/user/register}">register</a>?
+    <div>Actual Error:</div>
+    <div th:text="${session[SPRING_SECURITY_LAST_EXCEPTION]}">ERROR</div>
+</div>
+<div th:if="${param.logout}" class="alert">
+    You have been logged out.
+</div>
+
+</body>
+
+<script type="text/javascript">
+    function validate() {
+        if (document.f.username.value == "" && document.f.password.value == "") {
+            alert("Username and password are required");
+            document.f.username.focus();
+            return false;
+        }
+        if (document.f.username.value == "") {
+            alert("Username is required");
+            document.f.username.focus();
+            return false;
+        }
+        if (document.f.password.value == "") {
+            alert("Password is required");
+            document.f.password.focus();
+            return false;
+        }
+    }
+</script>
+</html>
