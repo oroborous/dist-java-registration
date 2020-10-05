@@ -10,7 +10,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class VerificationToken {
     private static final int EXPIRATION = 60 * 24;
@@ -34,7 +35,9 @@ public class VerificationToken {
     }
 
     private LocalDateTime calculateExpiryDate(int expiryTimeInMinutes) {
-        return LocalDateTime.now().plus(expiryTimeInMinutes, ChronoUnit.MINUTES);
+//        return LocalDateTime.now().plus(expiryTimeInMinutes, ChronoUnit.MINUTES);
+        // tokens expire in 10 seconds to test resending
+        return LocalDateTime.now().plus(10, ChronoUnit.SECONDS);
     }
 
     public void updateToken(String token) {

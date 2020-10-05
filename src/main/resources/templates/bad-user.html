@@ -6,30 +6,30 @@
 </head>
 <body>
 <div class="container">
-    <h1 class="alert alert-danger" th:utext="${messageKey}">error</h1>
+    <h1 class="alert alert-danger" th:utext="${param.messageKey}">error</h1>
     <br/>
     <a class="btn btn-default" th:href="@{/v/register}">Register</a>
 
-    <div th:if="${expired}">
+    <div th:if="${param.expired}">
         <br/>
         <h1>Resend Verification Email</h1>
         <button onclick="resendToken()">Resend</button>
 
         <script th:inline="javascript">
-            var serverContext = [[@{/}]];
+            var serverContext = /*[[@{/}]]*/ "/";
 
                 function resendToken() {
-                    var token = [[${token}]];
+                    var token = /*[[${param.token}]]*/ "none";
                     $.get(serverContext + "r/resendToken?token=" + token, function (data) {
-                        window.location.href = serverContext + "v/login?message=" + data.message;
+                        window.location.href = serverContext + "v/login?messageKey=" + data.message;
                     })
-                        .fail(function (data) {
-                            if (data.responseJSON.error.indexOf("MailError") > -1) {
-                                window.location.href = serverContext + "emailError.html";
-                            } else {
-                                window.location.href = serverContext + "v/login?message=" + data.responseJSON.message;
-                            }
-                        });
+                    .fail(function (data) {
+                        if (data.responseJSON.error.includes("MailError")) {
+                            window.location.href = serverContext + "v/emailError";
+                        } else {
+                            window.location.href = serverContext + "v/login?messageKey=" + data.responseJSON.message;
+                        }
+                    });
                 }
 
                 $(document).ajaxStart(function () {

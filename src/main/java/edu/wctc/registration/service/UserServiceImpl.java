@@ -91,12 +91,12 @@ public class UserServiceImpl implements UserService {
         User user = verificationToken.getUser();
 
         if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            tokenRepository.delete(verificationToken);
+//            tokenRepository.delete(verificationToken);
             return TOKEN_EXPIRED;
         }
 
         user.setEnabled(true);
-        // tokenRepository.delete(verificationToken);
+        tokenRepository.delete(verificationToken);
         userRepository.save(user);
         return TOKEN_VALID;
     }

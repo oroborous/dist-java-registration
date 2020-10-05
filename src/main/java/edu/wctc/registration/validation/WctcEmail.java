@@ -16,7 +16,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public @interface WctcEmail {
     Class<?>[] groups() default {};
 
-    String message() default "Invalid email";
+    String message() default "Must use a WCTC email address";
 
     Class<? extends Payload>[] payload() default {};
 }

@@ -1,6 +1,8 @@
 package edu.wctc.registration.repo.entity;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import javax.persistence.*;
@@ -8,7 +10,8 @@ import java.util.Collection;
 
 @Entity
 @Table(name = "user_account")
-@Data
+@Getter
+@Setter
 public class User {
 
     @Id
@@ -38,7 +41,6 @@ public class User {
     private Collection<Role> roles;
 
     public User() {
-        super();
         this.secret = RandomStringUtils.randomAlphanumeric(10);
         this.enabled = false;
     }

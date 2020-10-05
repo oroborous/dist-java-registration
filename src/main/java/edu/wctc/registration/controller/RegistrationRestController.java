@@ -38,7 +38,7 @@ public class RegistrationRestController {
                                                                     User user) {
         String recipientAddress = user.getEmail();
         String subject = "Registration Confirmation";
-        String confirmationUrl = contextPath + "/c/confirm?token=" + newToken;
+        String confirmationUrl = contextPath + "/c/confirm?token=" + newToken.getToken();
         String message = "To confirm your registration, please click on the below link.";
 
         SimpleMailMessage email = new SimpleMailMessage();
@@ -61,7 +61,6 @@ public class RegistrationRestController {
         User registered = userService.registerNewUserAccount(accountDto);
 
         eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registered,
-                request.getLocale(),
                 getAppUrl(request)));
         return new GenericResponse("success");
     }

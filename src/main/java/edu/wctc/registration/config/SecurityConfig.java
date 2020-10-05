@@ -25,7 +25,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .csrf().disable()
             .authorizeRequests()
-            .antMatchers("/", "/v/**", "/c/**").permitAll()
+            .antMatchers("/", "/v/**", "/c/**", "/r/**").permitAll()
             .anyRequest().authenticated()
             .and()
             .formLogin()
@@ -39,7 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     public void configure(WebSecurity webSecurity) throws Exception {
-        webSecurity.ignoring().antMatchers("/h2-console/**", "/resources/**", "/js/**");
+        webSecurity.ignoring().antMatchers("/h2-console/**");
     }
 
     @Override

@@ -31,7 +31,7 @@ public class RegistrationController {
                 model.addAttribute("messageKey", "Your account was verified successfully. Please login to continue.");
                 return "redirect:/v/login";
             case UserService.TOKEN_EXPIRED:
-                model.addAttribute("messageKey", "Your registration token has expired. Please register again.");
+                model.addAttribute("messageKey", "Your registration token has expired. Please request a new token or register again.");
                 model.addAttribute("expired", true);
                 model.addAttribute("token", token);
                 return "redirect:/v/badUser";

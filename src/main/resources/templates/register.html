@@ -38,7 +38,7 @@
             <div class="form-group row">
                 <label for="email" class="col-sm-3">Email</label>
                 <span class="col-sm-5">
-                    <input id="email" type="email" class="form-control" name="email" value="stacy.read.007@gmail.com"
+                    <input id="email" type="email" class="form-control" name="email" value="sread@wctc.edu"
                            required="required"/>
                 </span>
                 <span id="emailError" class="alert alert-danger col-sm-4" style="display:none"></span>
@@ -75,80 +75,79 @@
 </div>
 
 <script th:inline="javascript">
-    var serverContext = [[@{
-        /}]];
+    var serverContext = /*[[@{/}]]*/ "/";
 
-        $(document).ready(function () {
-            $('form').submit(function (event) {
-                register(event);
-            });
-
-            $(":password").keyup(function () {
-                if ($("#password").val() != $("#matchPassword").val()) {
-                    $("#globalError").show().html(/*[[#{PasswordMatches.user}]]*/);
-                } else {
-                    $("#globalError").html("").hide();
-                }
-            });
-
-            options = {
-                common: {minChar: 8},
-                ui: {
-                    showVerdictsInsideProgressBar: true,
-                    showErrors: true,
-                    errorMessages: {
-                        wordLength: "Your password is too short",
-                        wordNotEmail: "Do not use your email as your password",
-                        wordSequences: "Your password contains sequences",
-                        wordLowercase: "Use lower case characters",
-                        wordUppercase: "Use upper case characters",
-                        wordOneNumber: "Use numbers",
-                        wordOneSpecialChar: "Use special characters"
-                    }
-                }
-            };
-            $('#password').pwstrength(options);
+    $(document).ready(function () {
+        $('form').submit(function (event) {
+            register(event);
         });
 
-        function register(event) {
-            event.preventDefault();
-
-            $(".alert").html("").hide();
-            $(".error-list").html("");
-
+        $(":password").keyup(function () {
             if ($("#password").val() != $("#matchPassword").val()) {
-                $("#globalError").show().html(/*[[#{PasswordMatches.user}]]*/);
-                return;
+                $("#globalError").show().html("Passwords do not match");
+            } else {
+                $("#globalError").html("").hide();
             }
+        });
 
-            var formData = $("form").serialize();
+        options = {
+            common: {minChar: 8},
+            ui: {
+                showVerdictsInsideProgressBar: true,
+                showErrors: true,
+                errorMessages: {
+                    wordLength: "Your password is too short",
+                    wordNotEmail: "Do not use your email as your password",
+                    wordSequences: "Your password contains sequences",
+                    wordLowercase: "Use lower case characters",
+                    wordUppercase: "Use upper case characters",
+                    wordOneNumber: "Use numbers",
+                    wordOneSpecialChar: "Use special characters"
+                }
+            }
+        };
+        $('#password').pwstrength(options);
+    });
 
-            $.post(serverContext + "r/register",
-                formData,
-                function (data) {
-                    if (data.message == "success") {
-                        window.location.href = serverContext + "v/regSuccess";
-                    }
-                })
-                .fail(function (data) {
-                    if (data.responseJSON.error.indexOf("MailError") > -1) {
-                        window.location.href = serverContext + "emailError.html";
-                    } else if (data.responseJSON.error == "UserAlreadyExist") {
-                        $("#emailError").show().html(data.responseJSON.message);
-                    } else if (data.responseJSON.error.indexOf("InternalError") > -1) {
-                        window.location.href = serverContext + "v/login?message=" + data.responseJSON.message;
+    function register(event) {
+        event.preventDefault();
+
+        $(".alert").html("").hide();
+        $(".error-list").html("");
+
+        if ($("#password").val() != $("#matchPassword").val()) {
+            $("#globalError").show().html("Passwords do not match");
+            return;
+        }
+
+        var formData = $("form").serialize();
+
+        $.post(serverContext + "r/register",
+            formData,
+            function (data) {
+                if (data.message == "success") {
+                    window.location.href = serverContext + "v/regSuccess";
+                }
+            })
+        .fail(function (data) {
+            if (data.responseJSON.error == "UserAlreadyExists") {
+                $("#emailError").show().html(data.responseJSON.message);
+            } else if (data.responseJSON.error.includes("InternalError")) {
+                $("#globalError").show().html(data.responseJSON.message);
+            } else if (data.responseJSON.error.includes("MailError")) {
+                window.location.href = serverContext + "v/emailError";
+            } else {
+                var errors = $.parseJSON(data.responseJSON.message);
+                $.each(errors, function (index, item) {
+                    if (item.field) {
+                        $("#" + item.field + "Error").show().append(item.defaultMessage + "<br/>");
                     } else {
-                        var errors = $.parseJSON(data.responseJSON.message);
-                        $.each(errors, function (index, item) {
-                            if (item.field) {
-                                $("#" + item.field + "Error").show().append(item.defaultMessage + "<br/>");
-                            } else {
-                                $("#globalError").show().append(item.defaultMessage + "<br/>");
-                            }
-                        });
+                        $("#globalError").show().append(item.defaultMessage + "<br/>");
                     }
                 });
-        }
+            }
+        });
+    }
 
 </script>
 </body>
