@@ -29,4 +29,6 @@ public class UserDto {
     @NotNull
     @NotEmpty
     private String email;
+
+    private boolean isUsing2FA;
 }

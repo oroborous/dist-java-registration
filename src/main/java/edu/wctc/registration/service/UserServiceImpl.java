@@ -6,6 +6,7 @@ import edu.wctc.registration.repo.RoleRepository;
 import edu.wctc.registration.repo.UserRepository;
 import edu.wctc.registration.repo.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -18,8 +19,11 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-    private boolean emailExist(String email) {
+
+    private boolean emailExists(String email) {
         return userRepository.findByEmail(email) != null;
     }
 
@@ -28,7 +32,7 @@ public class UserServiceImpl implements UserService {
     public User registerNewUserAccount(UserDto userDto)
             throws UserAlreadyExistsException {
 
-        if (emailExist(userDto.getEmail())) {
+        if (emailExists(userDto.getEmail())) {
             throw new UserAlreadyExistsException(
                     "There is an account with that email address: "
                             + userDto.getEmail());
@@ -37,8 +41,9 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
-        user.setPassword(userDto.getPassword());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setEmail(userDto.getEmail());
+        user.setUsing2FA(userDto.isUsing2FA());
         user.setRoles(Arrays.asList(roleRepository.findByName("ROLE_USER")));
         return userRepository.save(user);
     }

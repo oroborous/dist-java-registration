@@ -23,24 +23,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
-                .authorizeRequests()
-                .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/", "/user/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .loginPage("/login")
-                .defaultSuccessUrl("/")
-                .permitAll()
-                .and()
-                .logout().permitAll()
-                .deleteCookies("JSESSIONID");
+            .csrf().disable()
+            .authorizeRequests()
+            .antMatchers("/", "/v/**", "/c/**").permitAll()
+            .anyRequest().authenticated()
+            .and()
+            .formLogin()
+            .loginPage("/v/login")
+            .defaultSuccessUrl("/").permitAll()
+            .and()
+            .logout()
+            .logoutUrl("/v/logout").permitAll()
+            .deleteCookies("JSESSIONID");
     }
 
 
     public void configure(WebSecurity webSecurity) throws Exception {
-        webSecurity.ignoring().antMatchers("/h2-console/**", "/img/**", "/style/**");
+        webSecurity.ignoring().antMatchers("/h2-console/**");
     }
 
     @Override

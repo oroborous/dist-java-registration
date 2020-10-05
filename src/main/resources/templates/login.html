@@ -1,52 +1,65 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://thymeleaf.org">
-<head></head>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css"/>
+    <title>Login</title>
+    <style type="text/css">
+        .wrapper {
+            width: 500px;
+            margin-left: auto;
+            margin-right: auto
+        }
+
+        label {
+            padding-left: 0 !important
+        }
+    </style>
+</head>
 <body>
-<h1>Login</h1>
-<form name="f" th:action="@{/login}" method="POST">
-    <table>
-        <tr>
-            <td>User:</td>
-            <td><input type="text" name="username" value="test@test.com"></td>
-        </tr>
-        <tr>
-            <td>Password:</td>
-            <td><input type="password" name="password" value="test"/></td>
-        </tr>
-        <tr>
-            <td><input name="submit" type="submit" value="submit"/></td>
-        </tr>
-    </table>
-</form>
+<div class="container">
+    <div class="row wrapper">
+        <h1>Login</h1>
+
+        <form name="f" th:action="@{/v/login}" method="POST">
+            <span id="welcometext">&nbsp;</span>
+
+            <br/><br/>
+            <label class="col-sm-4" for="email">Email</label>
+            <span class="col-sm-8">
+                <input id="email" class="form-control" type="text" name="username" value="test@test.com" required/>
+            </span>
+
+            <br/><br/>
+            <label class="col-sm-4" for="password">Password</label>
+            <span class="col-sm-8">
+                <input id="password" class="form-control" type="password" name="password" value="test" required/>
+            </span>
+
+            <br/><br/>
+            <label class="col-sm-4" for="code">Google Authenticator Verification Code</label>
+            <span class="col-sm-8">
+                <input id="code" class="form-control" type="text" name="code"/>
+            </span>
+
+            <br/><br/>
+            <input class="btn btn-primary" name="submit" type="submit" value="Login"/>
+
+        </form>
+    </div>
+</div>
 
 <div th:if="${param.error}" class="alert">
-    Invalid username or password. Do you need to <a th:href="@{/user/register}">register</a>?
+    Invalid username or password. Do you need to <a th:href="@{/v/register}">register</a>?
     <div>Actual Error:</div>
     <div th:text="${session[SPRING_SECURITY_LAST_EXCEPTION]}">ERROR</div>
 </div>
 <div th:if="${param.logout}" class="alert">
     You have been logged out.
 </div>
+<div th:if="${param.messageKey}" th:text="${param.messageKey}">
+    MESSAGE
+</div>
 
 </body>
 
-<script type="text/javascript">
-    function validate() {
-        if (document.f.username.value == "" && document.f.password.value == "") {
-            alert("Username and password are required");
-            document.f.username.focus();
-            return false;
-        }
-        if (document.f.username.value == "") {
-            alert("Username is required");
-            document.f.username.focus();
-            return false;
-        }
-        if (document.f.password.value == "") {
-            alert("Password is required");
-            document.f.password.focus();
-            return false;
-        }
-    }
-</script>
 </html>
