@@ -1,0 +1,43 @@
+<html xmlns:th="http://thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css"/>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <title>Bad User</title>
+</head>
+<body>
+<div class="container">
+    <h1 class="alert alert-danger" th:utext="${messageKey}">error</h1>
+    <br/>
+    <a class="btn btn-default" th:href="@{/v/register}">Register</a>
+
+    <div th:if="${expired}">
+        <br/>
+        <h1>Resend Verification Email</h1>
+        <button onclick="resendToken()">Resend</button>
+
+        <script th:inline="javascript">
+            var serverContext = [[@{/}]];
+
+                function resendToken() {
+                    var token = [[${token}]];
+                    $.get(serverContext + "r/resendToken?token=" + token, function (data) {
+                        window.location.href = serverContext + "v/login?message=" + data.message;
+                    })
+                        .fail(function (data) {
+                            if (data.responseJSON.error.indexOf("MailError") > -1) {
+                                window.location.href = serverContext + "emailError.html";
+                            } else {
+                                window.location.href = serverContext + "v/login?message=" + data.responseJSON.message;
+                            }
+                        });
+                }
+
+                $(document).ajaxStart(function () {
+                    $("title").html("LOADING ...");
+                });
+        </script>
+
+    </div>
+</div>
+</body>
+</html>

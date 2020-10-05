@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css"/>
+    <style>
+        .password-verdict {
+            color: #000;
+        }
+    </style>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pwstrength-bootstrap@3.0.9/dist/pwstrength-bootstrap.min.js"></script>
+    <title>Register</title>
+</head>
+<body>
+<div class="container">
+    <div>
+        <h1>Register</h1>
+        <br/>
+        <form action="/" method="POST">
+            <div class="form-group row">
+                <label for="firstName" class="col-sm-3">First Name</label>
+                <span class="col-sm-5">
+                    <input id="firstName" class="form-control" name="firstName" value="Stacy"
+                           required="required"/>
+                </span>
+                <span id="firstNameError" class="alert alert-danger col-sm-4" style="display:none"></span>
+
+            </div>
+            <div class="form-group row">
+                <label for="lastName" class="col-sm-3">Last Name</label>
+                <span class="col-sm-5">
+                    <input id="lastName" class="form-control" name="lastName" value="Read"
+                           required="required"/>
+                </span>
+                <span id="lastNameError" class="alert alert-danger col-sm-4" style="display:none"></span>
+
+            </div>
+            <div class="form-group row">
+                <label for="email" class="col-sm-3">Email</label>
+                <span class="col-sm-5">
+                    <input id="email" type="email" class="form-control" name="email" value="stacy.read.007@gmail.com"
+                           required="required"/>
+                </span>
+                <span id="emailError" class="alert alert-danger col-sm-4" style="display:none"></span>
+
+            </div>
+            <div class="form-group row">
+                <label for="password" class="col-sm-3">Password</label>
+                <span class="col-sm-5">
+                    <input id="password" class="form-control" name="password" value="@Password1"
+                           type="password" required="required" autocomplete="new-password"/>
+                </span>
+                <span id="passwordError" class="alert alert-danger col-sm-4" style="display:none"></span>
+            </div>
+            <div class="form-group row">
+                <label for="matchPassword" class="col-sm-3">Confirm Password</label>
+                <span class="col-sm-5">
+                    <input id="matchPassword" class="form-control" name="matchingPassword" value="@Password1"
+                           type="password" required="required" autocomplete="new-password"/>
+                </span>
+                <span id="globalError" class="alert alert-danger col-sm-4" style="display:none">
+
+                </span>
+            </div>
+            <div class="form-group row">
+                <label for="using2FA" class="col-sm-3">Use Two Step Verification</label>
+                <span class="col-sm-5">
+                    <input id="using2FA" type="checkbox" name="using2FA" value="true"/>
+                </span>
+            </div>
+            <br/>
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    var serverContext = [[@{
+        /}]];
+
+        $(document).ready(function () {
+            $('form').submit(function (event) {
+                register(event);
+            });
+
+            $(":password").keyup(function () {
+                if ($("#password").val() != $("#matchPassword").val()) {
+                    $("#globalError").show().html(/*[[#{PasswordMatches.user}]]*/);
+                } else {
+                    $("#globalError").html("").hide();
+                }
+            });
+
+            options = {
+                common: {minChar: 8},
+                ui: {
+                    showVerdictsInsideProgressBar: true,
+                    showErrors: true,
+                    errorMessages: {
+                        wordLength: "Your password is too short",
+                        wordNotEmail: "Do not use your email as your password",
+                        wordSequences: "Your password contains sequences",
+                        wordLowercase: "Use lower case characters",
+                        wordUppercase: "Use upper case characters",
+                        wordOneNumber: "Use numbers",
+                        wordOneSpecialChar: "Use special characters"
+                    }
+                }
+            };
+            $('#password').pwstrength(options);
+        });
+
+        function register(event) {
+            event.preventDefault();
+
+            $(".alert").html("").hide();
+            $(".error-list").html("");
+
+            if ($("#password").val() != $("#matchPassword").val()) {
+                $("#globalError").show().html(/*[[#{PasswordMatches.user}]]*/);
+                return;
+            }
+
+            var formData = $("form").serialize();
+
+            $.post(serverContext + "r/register",
+                formData,
+                function (data) {
+                    if (data.message == "success") {
+                        window.location.href = serverContext + "v/regSuccess";
+                    }
+                })
+                .fail(function (data) {
+                    if (data.responseJSON.error.indexOf("MailError") > -1) {
+                        window.location.href = serverContext + "emailError.html";
+                    } else if (data.responseJSON.error == "UserAlreadyExist") {
+                        $("#emailError").show().html(data.responseJSON.message);
+                    } else if (data.responseJSON.error.indexOf("InternalError") > -1) {
+                        window.location.href = serverContext + "v/login?message=" + data.responseJSON.message;
+                    } else {
+                        var errors = $.parseJSON(data.responseJSON.message);
+                        $.each(errors, function (index, item) {
+                            if (item.field) {
+                                $("#" + item.field + "Error").show().append(item.defaultMessage + "<br/>");
+                            } else {
+                                $("#globalError").show().append(item.defaultMessage + "<br/>");
+                            }
+                        });
+                    }
+                });
+        }
+
+</script>
+</body>
+
+</html>

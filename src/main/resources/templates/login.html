@@ -3,7 +3,7 @@
 <head></head>
 <body>
 <h1>Login</h1>
-<form name="f" th:action="@{/login}" method="POST">
+<form name="f" th:action="@{/v/login}" method="POST">
     <table>
         <tr>
             <td>User:</td>
@@ -20,12 +20,15 @@
 </form>
 
 <div th:if="${param.error}" class="alert">
-    Invalid username or password. Do you need to <a th:href="@{/user/register}">register</a>?
+    Invalid username or password. Do you need to <a th:href="@{/v/register}">register</a>?
     <div>Actual Error:</div>
     <div th:text="${session[SPRING_SECURITY_LAST_EXCEPTION]}">ERROR</div>
 </div>
 <div th:if="${param.logout}" class="alert">
     You have been logged out.
+</div>
+<div th:if="${param.messageKey}" th:text="${param.messageKey}">
+    MESSAGE
 </div>
 
 </body>
