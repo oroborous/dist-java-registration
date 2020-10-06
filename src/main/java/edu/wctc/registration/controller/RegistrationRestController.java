@@ -1,5 +1,6 @@
 package edu.wctc.registration.controller;
 
+import edu.wctc.registration.captcha.service.CaptchaService;
 import edu.wctc.registration.dto.GenericResponse;
 import edu.wctc.registration.dto.UserDto;
 import edu.wctc.registration.event.OnRegistrationCompleteEvent;
@@ -21,6 +22,9 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/r")
 public class RegistrationRestController {
+    @Autowired
+    private CaptchaService captchaService;
+
     @Autowired
     private JavaMailSender mailSender;
 
@@ -57,6 +61,10 @@ public class RegistrationRestController {
     public GenericResponse registerUserAccount(@Valid UserDto accountDto,
                                                HttpServletRequest request) {
         log.debug("Registering user account with information: {}", accountDto);
+
+        // CaptchaService will throw a runtime exception if it can't be processed
+        String response = request.getParameter("g-recaptcha-response");
+        captchaService.processResponse(response);
 
         User registered = userService.registerNewUserAccount(accountDto);
 
