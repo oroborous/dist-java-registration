@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.jboss.aerogear.security.otp.api.Base32;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -41,7 +42,8 @@ public class User {
     private Collection<Role> roles;
 
     public User() {
-        this.secret = RandomStringUtils.randomAlphanumeric(10);
+        // Must be 10-char base-32 string
+        this.secret = Base32.random();
         this.enabled = false;
     }
 

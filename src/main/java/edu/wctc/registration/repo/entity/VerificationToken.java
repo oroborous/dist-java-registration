@@ -35,9 +35,9 @@ public class VerificationToken {
     }
 
     private LocalDateTime calculateExpiryDate(int expiryTimeInMinutes) {
-//        return LocalDateTime.now().plus(expiryTimeInMinutes, ChronoUnit.MINUTES);
+        return LocalDateTime.now().plus(expiryTimeInMinutes, ChronoUnit.MINUTES);
         // tokens expire in 10 seconds to test resending
-        return LocalDateTime.now().plus(10, ChronoUnit.SECONDS);
+//        return LocalDateTime.now().plus(10, ChronoUnit.SECONDS);
     }
 
     public void updateToken(String token) {

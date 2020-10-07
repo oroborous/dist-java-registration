@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
 
 @Slf4j
 @RestController
@@ -47,6 +48,15 @@ public class RegistrationRestController {
         email.setText(message + " \r\n" + confirmationUrl);
         email.setFrom(env.getProperty("support.email"));
         return email;
+    }
+
+    @PostMapping("/update2fa")
+    public GenericResponse modifyUser2FA(@RequestParam("use2FA") boolean use2FA) throws UnsupportedEncodingException {
+        User user = userService.updateUser2FA(use2FA);
+        if (use2FA) {
+            return new GenericResponse(userService.generateQRUrl(user));
+        }
+        return null;
     }
 
     private String getAppUrl(HttpServletRequest request) {

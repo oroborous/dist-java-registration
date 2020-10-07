@@ -1,5 +1,6 @@
 package edu.wctc.registration.controller;
 
+import edu.wctc.registration.repo.entity.User;
 import edu.wctc.registration.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,11 +23,11 @@ public class RegistrationController {
         String result = userService.validateVerificationToken(token);
         switch (result) {
             case UserService.TOKEN_VALID:
-                // User user = userService.getUser(token);
-                // if (user.isUsing2FA()) {
-                // model.addAttribute("qr", userService.generateQRUrl(user));
-                // return "redirect:/qrcode.html?lang=" + locale.getLanguage();
-                // }
+                User user = userService.getUser(token);
+                if (user.isUsing2FA()) {
+                    model.addAttribute("qr", userService.generateQRUrl(user));
+                    return "redirect:/v/qrCode";
+                }
                 //authWithoutPassword(user);
                 model.addAttribute("messageKey", "Your account was verified successfully. Please login to continue.");
                 return "redirect:/v/login";

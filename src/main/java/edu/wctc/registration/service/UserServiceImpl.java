@@ -8,15 +8,23 @@ import edu.wctc.registration.repo.VerificationTokenRepository;
 import edu.wctc.registration.repo.entity.User;
 import edu.wctc.registration.repo.entity.VerificationToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
+    public static String QR_PREFIX = "https://chart.googleapis.com/chart?chs=200x200&chld=M%%7C0&cht=qr&chl=";
+    public static String APP_NAME = "Distributed Java Demo";
+
     @Autowired
     private UserRepository userRepository;
 
@@ -45,6 +53,16 @@ public class UserServiceImpl implements UserService {
         vToken.updateToken(UUID.randomUUID().toString());
         vToken = tokenRepository.save(vToken);
         return vToken;
+    }
+
+    @Override
+    public String generateQRUrl(User user) {
+        return QR_PREFIX + URLEncoder.encode(
+                String.format("otpauth://totp/%s:%s?secret=%s&issuer=%s",
+                        APP_NAME,
+                        user.getEmail(),
+                        user.getSecret(),
+                        APP_NAME), StandardCharsets.UTF_8);
     }
 
     @Override
@@ -82,6 +100,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User updateUser2FA(boolean use2FA) {
+        // Get currently authenticated user from Spring security context
+        Authentication curAuth = SecurityContextHolder.getContext().getAuthentication();
+
+        // Extract our entity object from principal
+        User currentUser = (User) curAuth.getPrincipal();
+        // Update 2FA setting
+        currentUser.setUsing2FA(use2FA);
+        // Save to database
+        currentUser = userRepository.save(currentUser);
+
+        // Create a new authentication with updated user
+        Authentication auth = new UsernamePasswordAuthenticationToken(currentUser, currentUser.getPassword(), curAuth.getAuthorities());
+        // Set new authentication in Spring security context
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        // Return updated user entity object
+        return currentUser;
+    }
+
+    @Override
     public String validateVerificationToken(String token) {
         VerificationToken verificationToken = tokenRepository.findByToken(token);
         if (verificationToken == null) {
@@ -96,7 +134,7 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setEnabled(true);
-        tokenRepository.delete(verificationToken);
+//        tokenRepository.delete(verificationToken);
         userRepository.save(user);
         return TOKEN_VALID;
     }

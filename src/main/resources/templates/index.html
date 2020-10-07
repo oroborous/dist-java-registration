@@ -12,7 +12,7 @@
 
 <!-- allow any authenticated users (regardless of authority) to see the div and its content -->
 <div sec:authorize="isAuthenticated()">
-    <h1 th:text="|Hello ${#authentication.name}!|"></h1>
+    <h1 th:text="|Hello ${#authentication.principal.firstName}!|"></h1>
     <form th:action="@{/v/logout}" method="post">
         <input id="logout" type="submit" value="Logout">
     </form>

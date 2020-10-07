@@ -12,13 +12,17 @@ public interface UserService {
 
     void createVerificationTokenForUser(User user, String token);
 
+    VerificationToken generateNewVerificationToken(String token);
+
+    String generateQRUrl(User user);
+
     User getUser(String verificationToken);
 
     User registerNewUserAccount(UserDto userDto) throws UserAlreadyExistsException;
 
-    VerificationToken generateNewVerificationToken(String token);
-
     void saveRegisteredUser(User user);
+
+    User updateUser2FA(boolean use2FA);
 
     String validateVerificationToken(String token);
 }
