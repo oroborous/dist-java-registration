@@ -50,6 +50,10 @@ public class RegistrationRestController {
         return email;
     }
 
+    /*
+    Can be used to toggle 2FA after account creation, but user account maintenance page not
+    implemented yet.
+     */
     @PostMapping("/update2fa")
     public GenericResponse modifyUser2FA(@RequestParam("use2FA") boolean use2FA) throws UnsupportedEncodingException {
         User user = userService.updateUser2FA(use2FA);
