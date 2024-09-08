@@ -1,9 +1,9 @@
 package edu.wctc.registration.validation;
 
 import edu.wctc.registration.dto.UserDto;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 
 public class PasswordMatchesValidator
         implements ConstraintValidator<PasswordMatches, Object> {

@@ -6,6 +6,8 @@ import edu.wctc.registration.event.OnRegistrationCompleteEvent;
 import edu.wctc.registration.repo.entity.User;
 import edu.wctc.registration.repo.entity.VerificationToken;
 import edu.wctc.registration.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -14,8 +16,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 @Slf4j
 @RestController
@@ -69,7 +69,7 @@ public class RegistrationRestController {
     public GenericResponse resendRegistrationToken(HttpServletRequest request,
                                                    @RequestParam("token") String existingToken) {
         VerificationToken newToken = userService.generateNewVerificationToken(existingToken);
-        User user = userService.getUser(newToken.getToken());
+        User user = newToken.getUser();
         String contextPath = getAppUrl(request);
         mailSender.send(constructResendVerificationTokenEmail(contextPath, newToken, user));
         return new GenericResponse("A new confirmation email has been sent.");

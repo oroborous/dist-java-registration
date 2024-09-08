@@ -15,7 +15,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @Override
     protected ResponseEntity<Object> handleBindException(BindException ex,
                                                          HttpHeaders headers,
                                                          HttpStatus status,

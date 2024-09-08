@@ -7,46 +7,42 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
+    private final String[] PERMITTED_REQUESTS = {"/", "/v/**", "/c/**", "/r/**", "/h2-console/**"};
 
-
-    @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-            .csrf().disable()
-            .authorizeRequests()
-            .antMatchers("/", "/v/**", "/c/**", "/r/**").permitAll()
-            .anyRequest().authenticated()
-            .and()
-            .formLogin()
-            .loginPage("/v/login")
-            .defaultSuccessUrl("/").permitAll()
-            .and()
-            .logout()
-            .logoutUrl("/v/logout").permitAll()
-            .deleteCookies("JSESSIONID");
+    @Bean
+    protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf((csrfConfig -> csrfConfig.disable()))
+                .authorizeHttpRequests(authz ->
+                        authz
+                                .requestMatchers(PERMITTED_REQUESTS)
+                                .permitAll()
+                                .anyRequest()
+                                .authenticated())
+                .formLogin(login ->
+                        login
+                                .loginPage("/v/login")
+                                .defaultSuccessUrl("/"))
+                .logout(logoutConfig ->
+                        logoutConfig
+                                .logoutUrl("/v/logout")
+                                .deleteCookies("JSESSIONID"))
+                .build();
     }
 
+//
+//    public void configure(WebSecurity webSecurity) throws Exception {
+//        webSecurity.ignoring().antMatchers();
+//    }
 
-    public void configure(WebSecurity webSecurity) throws Exception {
-        webSecurity.ignoring().antMatchers("/h2-console/**");
-    }
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth)
-            throws Exception {
-        auth.userDetailsService(userDetailsService);
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

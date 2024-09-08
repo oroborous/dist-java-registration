@@ -1,11 +1,10 @@
 package edu.wctc.registration.repo.entity;
 
-import lombok.Data;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.RandomStringUtils;
 
-import javax.persistence.*;
 import java.util.Collection;
 
 @Entity
