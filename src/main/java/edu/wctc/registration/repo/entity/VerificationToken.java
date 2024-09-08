@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 @Getter
 @Setter
@@ -36,7 +35,7 @@ public class VerificationToken {
     private LocalDateTime calculateExpiryDate(int expiryTimeInMinutes) {
 //        return LocalDateTime.now().plus(expiryTimeInMinutes, ChronoUnit.MINUTES);
         // tokens expire in 10 seconds to test resending
-        return LocalDateTime.now().plus(10, ChronoUnit.SECONDS);
+        return LocalDateTime.now().plusSeconds(10);
     }
 
     public void updateToken(String token) {
