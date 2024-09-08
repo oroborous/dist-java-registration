@@ -4,7 +4,6 @@ import edu.wctc.registration.repo.UserRepository;
 import edu.wctc.registration.repo.entity.Privilege;
 import edu.wctc.registration.repo.entity.Role;
 import edu.wctc.registration.repo.entity.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,8 +19,11 @@ import java.util.List;
 @Service
 @Primary
 public class MyUserDetailsService implements UserDetailsService {
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public MyUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     private Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles) {
         return getGrantedAuthorities(getPrivileges(roles));

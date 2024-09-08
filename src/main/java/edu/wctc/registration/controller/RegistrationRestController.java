@@ -9,7 +9,6 @@ import edu.wctc.registration.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
@@ -21,17 +20,17 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/r")
 public class RegistrationRestController {
-    @Autowired
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
+    private final UserService userService;
+    private final ApplicationEventPublisher eventPublisher;
+    private final Environment env;
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private ApplicationEventPublisher eventPublisher;
-
-    @Autowired
-    private Environment env;
+    public RegistrationRestController(JavaMailSender mailSender, UserService userService, ApplicationEventPublisher eventPublisher, Environment env) {
+        this.mailSender = mailSender;
+        this.userService = userService;
+        this.eventPublisher = eventPublisher;
+        this.env = env;
+    }
 
     private SimpleMailMessage constructResendVerificationTokenEmail(String contextPath,
                                                                     VerificationToken newToken,

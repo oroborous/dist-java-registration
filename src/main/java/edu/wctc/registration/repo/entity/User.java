@@ -7,10 +7,10 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.Collection;
 
-@Entity
-@Table(name = "user_account")
 @Getter
 @Setter
+@Entity
+@Table(name = "user_account")
 public class User {
 
     @Id
